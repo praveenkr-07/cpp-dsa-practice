@@ -1,0 +1,1 @@
+int *ptr1 = '\0'; // \0 is null character having ascii value 0 

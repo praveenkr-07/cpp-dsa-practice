@@ -1,0 +1,35 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+void change(vector<int>& a)// passing of vector to a function is pass by value
+{
+    a[0] = 100;
+    // for (int i = 0; i < a.size(); i++)
+    // {
+    //     cout << a.at(i) << " ";
+    // }
+    // cout<<endl;
+}
+int main()
+{
+    vector<int> v;
+    v.push_back(4);
+    v.push_back(6);
+    v.push_back(3);
+    v.push_back(9);
+    for (int i = 0; i < v.size(); i++)
+    {
+        cout << v.at(i) << " ";
+    }
+    cout << endl;
+
+   change(v);
+    for (int i = 0; i < v.size(); i++)
+    {
+        cout << v.at(i) << " ";
+    }
+    cout << endl;
+
+    return 0;
+}

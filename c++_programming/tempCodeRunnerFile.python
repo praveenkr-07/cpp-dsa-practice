@@ -1,0 +1,95 @@
+# Experiment 6: Logistic Regression (Self-Generated Dataset)
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import fmin_bfgs
+
+np.random.seed(0)
+
+# -----------------------------
+# 1. Generate Dataset
+# -----------------------------
+m = 100
+
+# Generate exam scores
+exam1 = np.random.uniform(30, 100, m)
+exam2 = np.random.uniform(30, 100, m)
+
+# Admission rule (linear boundary)
+y = (exam1 + exam2 > 120).astype(int)
+
+X = np.column_stack((exam1, exam2))
+
+# Add intercept term
+X = np.c_[np.ones((m, 1)), X]
+
+
+# -----------------------------
+# 2. Sigmoid Function
+# -----------------------------
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+
+# -----------------------------
+# 3. Cost Function
+# -----------------------------
+def cost_function(theta, X, y):
+    m = len(y)
+    h = sigmoid(np.dot(X, theta))
+    return (-1/m) * np.sum(y*np.log(h) + (1-y)*np.log(1-h))
+
+
+# -----------------------------
+# 4. Gradient Function
+# -----------------------------
+def gradient(theta, X, y):
+    m = len(y)
+    h = sigmoid(np.dot(X, theta))
+    return (1/m) * np.dot(X.T, (h - y))
+
+
+# -----------------------------
+# 5. Train Model
+# -----------------------------
+initial_theta = np.zeros(X.shape[1])
+
+theta = fmin_bfgs(cost_function,
+                  initial_theta,
+                  fprime=gradient,
+                  args=(X, y),
+                  maxiter=400,
+                  disp=False)
+
+print("Optimized Theta:", theta)
+
+
+# -----------------------------
+# 6. Plot Decision Boundary
+# -----------------------------
+pos = y == 1
+neg = y == 0
+
+plt.scatter(X[pos, 1], X[pos, 2], marker='o', label='Admitted')
+plt.scatter(X[neg, 1], X[neg, 2], marker='x', label='Not Admitted')
+
+x_values = np.array([min(X[:,1]), max(X[:,1])])
+y_values = -(theta[0] + theta[1]*x_values) / theta[2]
+
+plt.plot(x_values, y_values, label='Decision Boundary')
+
+plt.xlabel("Exam 1 Score")
+plt.ylabel("Exam 2 Score")
+plt.legend()
+plt.title("Logistic Regression")
+plt.show()
+
+
+# -----------------------------
+# 7. Accuracy
+# -----------------------------
+def predict(theta, X):
+    return sigmoid(np.dot(X, theta)) >= 0.5
+
+accuracy = np.mean(predict(theta, X) == y) * 100
+print("Training Accuracy: {:.2f}%".format(accuracy))
